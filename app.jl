@@ -4,9 +4,8 @@ using DataFrames
 
 const DATASET_REF = Ref(DataFrame())
 
-
 function read_file(source)
-    path = strip(source)
+    path = strip(String(source))
 
     if isempty(path)
         return "No path was given."
@@ -14,21 +13,20 @@ function read_file(source)
     if !isfile(path)
         return "This file does not exist."
     end
-    if !(endswith(lowercase(path), ".csv") || endswith(lowercase(path), ".xlsx"))
-        return "Incorrect file format"
+    if !endswith(lowercase(path), ".csv")
+        return "Incorrect file format. Only .csv is supported for now."
     end
 
-    try 
+    try
         df = CSV.read(path, DataFrame)
         DATASET_REF[] = df
-        return "File loaded, Rows: $(nrow(df)) Columns: $(ncol(df))"
+        return "File loaded. Rows: $(nrow(df)), Columns: $(ncol(df))"
     catch e
         return "There was an error while loading the file: " * sprint(showerror, e)
     end
 end
 
 @qmlfunction read_file
-
 
 loadqml("UI/main.qml")
 exec()
